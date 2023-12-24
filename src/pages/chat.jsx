@@ -42,95 +42,118 @@ function Chat() {
   };
 
   return (
-    <Flex h="100vh" m={4} borderRadius="10px" bg="white" boxShadow="lg">
+    <Flex h="100vh" flexDirection="column">
+      {/* Sticky Banner */}
       <Box
-        w="200px"
-        borderRight="1px"
-        p={4}
-        borderColor="gray.200"
-        bg="gray.50" // Set background color
+        bg="teal.500"
+        color="white"
+        p={2}
+        textAlign="center"
+        fontWeight="bold"
+        position="sticky"
+        top="0"
+        zIndex="999"
       >
-        <List spacing={3}>
-          <ListItem
-            fontSize="lg"
-            fontWeight="bold"
-            color="teal.500"
-            _hover={{ color: "teal.700", cursor: "pointer" }}
-          >
-            List Item 1
-          </ListItem>
-          <ListItem fontSize="lg" _hover={{ bg: "teal.50", cursor: "pointer" }}>
-            List Item 2
-          </ListItem>
-          <ListItem fontSize="lg" _hover={{ bg: "teal.50", cursor: "pointer" }}>
-            List Item 3
-          </ListItem>
-        </List>
+       Wonka Buster
       </Box>
 
-      <Flex
-        flexDirection="column"
-        justifyContent="space-between"
-        w="100%"
-        p={4}
-      >
-        <Box overflowY="auto" flex="1">
-          <VStack spacing={4} align="stretch">
-            {messages.map((message, index) => (
-              <Flex key={index}>
-                <Box
-                  p={3}
-                  borderRadius="8px"
-                  bg={message.sender === "user" ? "teal.500" : "gray.200"}
-                >
-                  <Text
-                    fontSize="xl"
-                    color={message.sender === "user" ? "white" : "gray.800"}
-                  >
-                    {message.text}
-                  </Text>
-                </Box>
-              </Flex>
-            ))}
-            <div ref={messagesEndRef} />
-          </VStack>
+      {/* Main Chat Section */}
+      <Flex h="100%" m={4} borderRadius="10px" bg="white" boxShadow="lg">
+        <Box
+          w="200px"
+          borderRight="1px"
+          p={4}
+          borderColor="gray.200"
+          bg="gray.50" // Set background color
+        >
+          <List spacing={3}>
+            <ListItem
+              fontSize="lg"
+              fontWeight="bold"
+              color="teal.500"
+              _hover={{ color: "teal.700", cursor: "pointer" }}
+            >
+              List Item 1
+            </ListItem>
+            <ListItem
+              fontSize="lg"
+              _hover={{ bg: "teal.50", cursor: "pointer" }}
+            >
+              List Item 2
+            </ListItem>
+            <ListItem
+              fontSize="lg"
+              _hover={{ bg: "teal.50", cursor: "pointer" }}
+            >
+              List Item 3
+            </ListItem>
+          </List>
         </Box>
 
-        <Flex mt={4} mb={4} w="75%" mx="auto">
-          <Box flex="1" mr={4}>
-            <InputGroup size="lg">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleSend();
-                  }
-                }}
-                placeholder="Type a message"
-                bg="gray.100" // Set background color
-                focusBorderColor="teal.500"
-                borderColor="teal.500"
-                borderWidth={2}
-                fontSize="lg"
-                borderRadius="full"
-                _placeholder={{ color: "gray.500", fontStyle: "italic" }} // Adjust placeholder styling
-                _hover={{ borderColor: "teal.300" }} // Change border color on hover
-                _focus={{ borderColor: "teal.500", boxShadow: "outline" }} // Adjust focus styles
-              />
-              <InputRightElement width="4.5rem">
-                <Button
-                  h="1.75rem"
-                  size="sm"
-                  onClick={handleSend}
-                  variant="unstyled"
-                >
-                  <Icon as={MdOutlineSend} color="teal.500" boxSize={5} />
-                </Button>
-              </InputRightElement>
-            </InputGroup>{" "}
-            <Spacer mx={2} />
+        <Flex
+          flexDirection="column"
+          justifyContent="space-between"
+          w="100%"
+          p={4}
+        >
+          <Box overflowY="auto" flex="1">
+            <VStack spacing={4} align="stretch">
+              {messages.map((message, index) => (
+                <Flex key={index}>
+                  <Box
+                    p={3}
+                    borderRadius="8px"
+                    bg={message.sender === "user" ? "teal.500" : "gray.200"}
+                  >
+                    <Text
+                      fontSize="xl"
+                      color={message.sender === "user" ? "white" : "gray.800"}
+                    >
+                      {message.text}
+                    </Text>
+                  </Box>
+                </Flex>
+              ))}
+              <div ref={messagesEndRef} />
+            </VStack>
           </Box>
+
+          <Flex mt={4} mb={4} w="75%" mx="auto">
+            <Box flex="1" mr={4}>
+              <InputGroup size="lg">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleSend();
+                    }
+                  }}
+                  placeholder="Type a message"
+                  bg="gray.100" // Set background color
+                  focusBorderColor="teal.500"
+                  borderColor="teal.500"
+                  borderWidth={2}
+                  fontSize="lg"
+                  borderRadius="full"
+                  _placeholder={{ color: "gray.500", fontStyle: "italic" }} // Adjust placeholder styling
+                  _hover={{ borderColor: "teal.300" }} // Change border color on hover
+                  _focus={{ borderColor: "teal.500", boxShadow: "outline" }} // Adjust focus styles
+                />
+                <InputRightElement width="4.5rem">
+                  <Button
+                    h="1.75rem"
+                    size="sm"
+                    onClick={handleSend}
+                    variant="unstyled"
+                  >
+                    <Icon as={MdOutlineSend} color="teal.500" boxSize={5} />
+                  </Button>
+                </InputRightElement>
+              </InputGroup>{" "}
+              <Spacer mx={2} />
+            </Box>
+          </Flex>
         </Flex>
       </Flex>
     </Flex>
