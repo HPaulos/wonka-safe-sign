@@ -10,7 +10,7 @@ import {
   InputRightElement,
   Badge,
 } from "@chakra-ui/react";
-import { MdOutlineSend } from "react-icons/md";
+import { MdSend } from "react-icons/md";
 import { Icon } from "@chakra-ui/react";
 
 function Chat() {
@@ -133,7 +133,7 @@ function Chat() {
               />
               <InputRightElement>
                 <Button variant="ghost" onClick={handleSend}>
-                  <Icon as={MdOutlineSend} color="teal.500" />
+                  <Icon as={MdSend} color="teal.500" fontSize="2rem" />
                 </Button>
               </InputRightElement>
             </InputGroup>

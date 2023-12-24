@@ -1,7 +1,8 @@
 import React from "react";
-import { Container, Heading, Box, Grid } from "@chakra-ui/react";
+import { Container, Heading, Box, Grid, Flex } from "@chakra-ui/react";
 import Documents from "./documents";
 import Chat from "./chat";
+import ProfileMenu from "./profileMenu";
 
 function Home() {
   return (
@@ -16,16 +17,22 @@ function Home() {
           position="sticky"
           top="0"
           zIndex="999"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
         >
-          Wonka Buster
+          <Flex alignItems="center" justifyContent="space-between" width="100%">
+            <Box ml={4}>Wonka Buster</Box>
+            <ProfileMenu />
+          </Flex>
         </Box>
       </Heading>
       <Grid templateColumns="1fr 3fr" gap={6}>
         <Box bg="gray.200" height="80vh">
-            <Documents />
+          <Documents />
         </Box>
         <Box bg="gray.300" height="80vh">
-          <Chat/>
+          <Chat />
         </Box>
       </Grid>
       <Box
@@ -38,7 +45,7 @@ function Home() {
         bottom="0"
         zIndex="999"
       >
-        Bottom Bar
+        Wonka Buster
       </Box>
     </Container>
   );
