@@ -5,7 +5,7 @@ import Chat from "./chat";
 
 function Home() {
   return (
-    <Container maxW="container.lg" p={4}>
+    <Container maxW="container.xl" p={4}>
       <Heading mb={6}>
         <Box
           bg="teal.500"

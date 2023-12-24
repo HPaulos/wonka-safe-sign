@@ -5,23 +5,38 @@ import {
   ListItem,
   Icon,
   Text,
-  VStack,
   InputGroup,
   InputRightElement,
   InputLeftElement,
   Container,
   Box,
   Button,
+  Tooltip,
 } from "@chakra-ui/react";
 import { MdSearch, MdClose } from "react-icons/md";
 import { useDebouncedCallback } from "use-debounce";
+import { MdDescription, MdPictureAsPdf, MdAttachFile } from "react-icons/md";
+import { Flex } from "@chakra-ui/react";
+import { FaFileAlt } from "react-icons/fa";
 
 const documents = [
-  { name: "Book 1.pdf" },
-  { name: "Document 1.docx" },
-  { name: "Text 1.txt" },
+  { name: "Book 1", type: "pdf", size: 2.5, date: "2021-01-01" },
+  { name: "Document 1", type: "docx", size: 1.5, date: "2021-01-02" },
+  { name: "Text 1", type: "docx", size: 1.5, date: "2021-01-03" },
+  { name: "Book 2", type: "txt", size: 2.5, date: "2021-01-04" },
+  { name: "Document 2", type: "excel", size: 1.5, date: "2021-01-05" },
   // Add more documents here
 ];
+
+const icons = {
+  docx: { icon: MdDescription, color: "blue.500" },
+  pdf: { icon: MdPictureAsPdf, color: "red.500" },
+  txt: { icon: FaFileAlt, color: "gray.500" },
+  default: {
+    icon: MdAttachFile,
+    color: "gray.400",
+  },
+};
 
 function Documents() {
   const [search, setSearch] = useState("");
@@ -63,6 +78,7 @@ function Documents() {
             value={inputValue}
             onChange={handleInputChange}
             borderColor="teal.500"
+            bg="white"
           />
           <InputRightElement>
             <Button variant="ghost" onClick={clearSearch}>
@@ -70,15 +86,30 @@ function Documents() {
             </Button>
           </InputRightElement>
         </InputGroup>
-        <List spacing={3}>
-          {filteredDocuments.map((document, index) => (
-            <ListItem key={index}>
-              <VStack spacing={1} align="start">
-                <Text>{document.name}</Text>
-              </VStack>
+        <List>
+          {filteredDocuments.map((doc) => (
+            <ListItem>
+              <Tooltip
+                label={doc.date}
+                aria-label="A tooltip"
+                placement="auto-end"
+                openDelay={1000}
+              >
+                <Button variant="ghost">
+                  <Flex align="center">
+                    <Icon
+                      as={icons[doc.type]?.icon || icons["default"].icon}
+                      color={icons[doc.type]?.color || icons["default"].color}
+                    />{" "}
+                    <Text ml={2} noOfLines={1}>
+                      {doc.name}
+                    </Text>
+                  </Flex>
+                </Button>
+              </Tooltip>
             </ListItem>
           ))}
-        </List>
+        </List>{" "}
       </Container>
     </Box>
   );
