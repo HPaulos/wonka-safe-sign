@@ -8,6 +8,7 @@ import {
   InputGroup,
   Textarea,
   InputRightElement,
+  Badge,
 } from "@chakra-ui/react";
 import { MdOutlineSend } from "react-icons/md";
 import { Icon } from "@chakra-ui/react";
@@ -77,6 +78,46 @@ function Chat() {
             <div ref={messagesEndRef} />
           </VStack>
         </Box>
+        <Box mb={4} textAlign="center">
+          <Flex justifyContent="center">
+            <Badge
+              flex="1"
+              mr={2}
+              whiteSpace="nowrap"
+              fontSize="lg"
+              color="teal.500" // Match font color with input field
+              bg="gray.100" // Match background color with input field
+              borderRadius="1rem"
+              px={4}
+              py={2}
+              textTransform="none" // Prevent uppercase transformation
+              _hover={{
+                bg: "teal.200", // Adjust hover background color if needed
+              }}
+              onClick={() => setInput("Summarize the document for me")}
+            >
+              Summarize the document for me
+            </Badge>
+
+            <Badge
+              flex="1"
+              whiteSpace="nowrap"
+              fontSize="lg"
+              color="teal.500" // Match font color with input field
+              bg="gray.100" // Match background color with input field
+              borderRadius="1rem"
+              px={4}
+              py={2}
+              textTransform="none" // Prevent uppercase transformation
+              _hover={{
+                bg: "teal.200", // Adjust hover background color if needed
+              }}
+              onClick={() => setInput("Summarize date-sensitive things")}
+            >
+              Summarize date-sensitive things
+            </Badge>
+          </Flex>
+        </Box>
         <Flex mt={4} mb={4} w="75%" mx="auto">
           <Box flex="1" mr={4}>
             <InputGroup mb={3}>
@@ -85,7 +126,7 @@ function Chat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 borderColor="teal.500"
-                resize="none" 
+                resize="none"
                 size="lg"
                 bg="gray.100"
                 h="auto"
