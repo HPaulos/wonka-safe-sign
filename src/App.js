@@ -1,10 +1,10 @@
 import { ChakraProvider } from "@chakra-ui/react"
-import Chat from "./pages/chat";
+import Home from "./pages/home";
 
 function App() {
   return (
     <ChakraProvider>
-      <Chat />
+      <Home />
     </ChakraProvider>
   );
 }

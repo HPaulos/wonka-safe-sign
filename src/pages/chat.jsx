@@ -7,8 +7,6 @@ import {
   VStack,
   Text,
   Flex,
-  List,
-  ListItem,
   InputGroup,
   InputRightElement,
 } from "@chakra-ui/react";
@@ -42,60 +40,23 @@ function Chat() {
   };
 
   return (
-    <Flex h="100vh" flexDirection="column">
-      {/* Sticky Banner */}
-      <Box
-        bg="teal.500"
-        color="white"
-        p={2}
-        textAlign="center"
-        fontWeight="bold"
-        position="sticky"
-        top="0"
-        zIndex="999"
+    <Flex direction="column" h="100vh">
+      <Flex
+        flex="1"
+        direction="column"
+        m={4}
+        borderRadius="10px"
+        boxShadow="lg"
+        overflow="hidden"
       >
-       Wonka Buster
-      </Box>
-
-      {/* Main Chat Section */}
-      <Flex h="100%" m={4} borderRadius="10px" bg="white" boxShadow="lg">
-        <Box
-          w="200px"
-          borderRight="1px"
-          p={4}
-          borderColor="gray.200"
-          bg="gray.50" // Set background color
-        >
-          <List spacing={3}>
-            <ListItem
-              fontSize="lg"
-              fontWeight="bold"
-              color="teal.500"
-              _hover={{ color: "teal.700", cursor: "pointer" }}
-            >
-              List Item 1
-            </ListItem>
-            <ListItem
-              fontSize="lg"
-              _hover={{ bg: "teal.50", cursor: "pointer" }}
-            >
-              List Item 2
-            </ListItem>
-            <ListItem
-              fontSize="lg"
-              _hover={{ bg: "teal.50", cursor: "pointer" }}
-            >
-              List Item 3
-            </ListItem>
-          </List>
-        </Box>
-
         <Flex
-          flexDirection="column"
+          flex="1"
+          direction="column"
           justifyContent="space-between"
-          w="100%"
           p={4}
+          overflowY="auto"
         >
+          {" "}
           <Box overflowY="auto" flex="1">
             <VStack spacing={4} align="stretch">
               {messages.map((message, index) => (
@@ -103,7 +64,7 @@ function Chat() {
                   <Box
                     p={3}
                     borderRadius="8px"
-                    bg={message.sender === "user" ? "teal.500" : "gray.200"}
+                    bg={message.sender === "user" ? "teal.500" : "white"}
                   >
                     <Text
                       fontSize="xl"
@@ -117,7 +78,6 @@ function Chat() {
               <div ref={messagesEndRef} />
             </VStack>
           </Box>
-
           <Flex mt={4} mb={4} w="75%" mx="auto">
             <Box flex="1" mr={4}>
               <InputGroup size="lg">
