@@ -88,12 +88,13 @@ function Documents() {
         </InputGroup>
         <List>
           {filteredDocuments.map((doc) => (
-            <ListItem>
+            <ListItem key={doc.name}>
               <Tooltip
                 label={doc.date}
                 aria-label="A tooltip"
                 placement="auto-end"
                 openDelay={1000}
+                
               >
                 <Button variant="ghost">
                   <Flex align="center">
