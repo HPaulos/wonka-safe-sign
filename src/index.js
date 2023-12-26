@@ -12,11 +12,9 @@ if (!firebaseWonkaApp) {
 
 const root = createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
     <ChakraProvider>
       <App />
     </ChakraProvider>
-  </React.StrictMode>
 );
 
 reportWebVitals();
