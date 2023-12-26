@@ -1,8 +1,8 @@
 import React from "react";
 import { Container, Heading, Box, Grid, Flex } from "@chakra-ui/react";
-import Documents from "./documents";
-import Chat from "./chat";
-import ProfileMenu from "./profileMenu";
+import Documents from "../components/documents";
+import Chat from "../components/chat";
+import ProfileMenu from "../components/profileMenu";
 
 function Home() {
   return (
