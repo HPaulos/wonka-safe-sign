@@ -30,9 +30,15 @@ function WonkaLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const isEmailValid = (email) => {
+    // eslint-disable-next-line no-useless-escape
+    const emailRegex = /^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*(\.[a-zA-Z]{2,4})+$/;
+    return emailRegex.test(email);
+  }
+
   useEffect(() => {
     const checkRegistration = async () => {
-      if (email) {
+      if (email && isEmailValid(email)) {
         const isRegistered = await checkIfUserIsRegistered(email);
         if (isRegistered) {
           setOldAccount(true);
