@@ -1,5 +1,5 @@
 import { getApps, initializeApp } from "firebase/app";
-import firebaseConfig from "./firebaseConfig";
+import firebaseConfig from "./firebase-config";
 
 
 const firebaseWonkaApp = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];

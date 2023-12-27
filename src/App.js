@@ -1,5 +1,5 @@
 import Home from "./pages/home";
-import Login from "./pages/login";
+import WonkaLogin from "./pages/wonka-login";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 //create the app with routes
@@ -8,7 +8,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<WonkaLogin />} />
       </Routes>
     </Router>
   );

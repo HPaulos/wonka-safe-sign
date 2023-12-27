@@ -5,7 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import App from "./App";
 import { createRoot } from "react-dom/client";
 import { ChakraProvider } from "@chakra-ui/react";
-import firebaseWonkaApp from "../src/util/firebaseWonkaApp";
+import firebaseWonkaApp from "../src/util/firebase-wonka-app";
 if (!firebaseWonkaApp) {
   console.log("firebaseWonkaApp.apps.length === 0");
 }
