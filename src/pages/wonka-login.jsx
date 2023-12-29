@@ -16,7 +16,7 @@ import {
   IconButton,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { FaGoogle, FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import firebaseWonkaApp from "../util/firebase-wonka-app";
 import {
   getAuth,
@@ -41,21 +41,16 @@ function WonkaLogin() {
   const [passwordsMatch, setPasswordsMatch] = useState(false); // TODO: Implement password matching [https://stackoverflow.com/questions/21727317/how-to-check-confirm-password-field-in-form-without-reloading-page
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [disabled, setDisabled] = useState(true); // TODO: Implement disabled button [https://stackoverflow.com/questions/21727317/how-to-check-confirm-password-field-in-form-without-reloading-page
 
   const toggleShowPassword = () => setShowPassword(!showPassword);
   const toggleShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
   const handlePasswordMatch = (event) => {
-    if (
-      password !== "" &&
-      event.target.value !== "" &&
-      event.target.value === password
-    ) {
-      setPasswordsMatch(event.target.value === password);
-    } else {
-      setPasswordsMatch(false);
-    }
+    const passwordsMatch = password && event.target.value === password;
+    setPasswordsMatch(passwordsMatch);
+    setDisabled(!(isEmailValid(email) && password && passwordsMatch));
   };
 
   const isEmailValid = (email) => {
@@ -83,14 +78,22 @@ function WonkaLogin() {
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
+    setDisabled(
+      !(isEmailValid(event.target.value) && password && passwordsMatch)
+    );
   };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
+    setDisabled(!(isEmailValid(email) && event.target.value && passwordsMatch));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if(disabled){
+      setError("Please enter a valid email and password");
+      return;
+    }
     setError(""); // Reset the error message before a new attempt
     const auth = getAuth(firebaseWonkaApp);
     if (newAccount) {
@@ -193,18 +196,14 @@ function WonkaLogin() {
                 {error}
               </Alert>
             )}
-            <Button colorScheme="teal" type="submit" width="full" mt={4}>
-              {newAccount ? "Register" : "Login"}
-            </Button>
             <Button
-              leftIcon={<FaGoogle />}
-              colorScheme="red"
-              variant="outline"
-              onClick={() => console.log("Login with Google")}
+              disabled={disabled}
+              colorScheme="teal"
+              type="submit"
               width="full"
               mt={4}
             >
-              Login with Google
+              {newAccount ? "Register" : "Login"}
             </Button>
           </VStack>
         </form>
