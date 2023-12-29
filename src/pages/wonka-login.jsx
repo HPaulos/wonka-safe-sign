@@ -11,10 +11,19 @@ import {
   Spacer,
   Alert,
   AlertIcon,
+  InputGroup,
+  InputRightElement,
+  IconButton,
+  FormErrorMessage,
 } from "@chakra-ui/react";
-import { FaGoogle, FaPencilAlt } from "react-icons/fa";
+import { FaGoogle, FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import firebaseWonkaApp from "../util/firebase-wonka-app";
-import { getAuth, fetchSignInMethodsForEmail, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  fetchSignInMethodsForEmail,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 function WonkaLogin() {
   const checkIfUserIsRegistered = async (email) => {
@@ -25,16 +34,36 @@ function WonkaLogin() {
 
   const [newAccount, setNewAccount] = useState(false);
   const [oldAccount, setOldAccount] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState(false);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(false); // TODO: Implement password matching [https://stackoverflow.com/questions/21727317/how-to-check-confirm-password-field-in-form-without-reloading-page
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const toggleShowPassword = () => setShowPassword(!showPassword);
+  const toggleShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+
+  const handlePasswordMatch = (event) => {
+    if (
+      password !== "" &&
+      event.target.value !== "" &&
+      event.target.value === password
+    ) {
+      setPasswordsMatch(event.target.value === password);
+    } else {
+      setPasswordsMatch(false);
+    }
+  };
 
   const isEmailValid = (email) => {
     // eslint-disable-next-line no-useless-escape
-    const emailRegex = /^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*(\.[a-zA-Z]{2,4})+$/;
+    const emailRegex =
+      /^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*(\.[a-zA-Z]{2,4})+$/;
     return emailRegex.test(email);
-  }
+  };
 
   useEffect(() => {
     const checkRegistration = async () => {
@@ -43,11 +72,9 @@ function WonkaLogin() {
         if (isRegistered) {
           setOldAccount(true);
           setNewAccount(false);
-          setConfirmPassword(false);
         } else {
           setNewAccount(true);
           setOldAccount(false);
-          setConfirmPassword(true);
         }
       }
     };
@@ -68,7 +95,11 @@ function WonkaLogin() {
     const auth = getAuth(firebaseWonkaApp);
     if (newAccount) {
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
         // Registered successfully
         console.log(userCredential);
       } catch (error) {
@@ -76,7 +107,11 @@ function WonkaLogin() {
       }
     } else {
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
         // Logged in successfully
         console.log(userCredential);
       } catch (error) {
@@ -99,16 +134,57 @@ function WonkaLogin() {
             </Flex>
             <Spacer my={1} />
             <FormControl id="email">
-              <Input type="email" placeholder="Email Address" onChange={handleEmailChange} />
+              <Input
+                type="email"
+                placeholder="Email Address"
+                onChange={handleEmailChange}
+              />
             </FormControl>
             {(newAccount || oldAccount) && (
               <FormControl id="password">
-                <Input type="password" placeholder="Password" onChange={handlePasswordChange} />
+                <InputGroup>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    onChange={handlePasswordChange}
+                  />
+                  <InputRightElement>
+                    <IconButton
+                      bg="transparent !important"
+                      variant="ghost"
+                      aria-label={
+                        showPassword ? "Mask password" : "Show password"
+                      }
+                      icon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                      onClick={toggleShowPassword}
+                    />
+                  </InputRightElement>
+                </InputGroup>
               </FormControl>
             )}
-            {confirmPassword && (
-              <FormControl id="confirmPassword">
-                <Input type="password" placeholder="Confirm Password" />
+            {newAccount && (
+              <FormControl id="confirmPassword" isInvalid={!passwordsMatch}>
+                <InputGroup>
+                  <Input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm Password"
+                    onChange={handlePasswordMatch}
+                  />
+                  <InputRightElement>
+                    <IconButton
+                      bg="transparent !important"
+                      variant="ghost"
+                      aria-label={
+                        showConfirmPassword ? "Mask password" : "Show password"
+                      }
+                      icon={showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                      onClick={toggleShowConfirmPassword}
+                    />
+                  </InputRightElement>
+                </InputGroup>
+                {!passwordsMatch && (
+                  <FormErrorMessage>Passwords do not match</FormErrorMessage>
+                )}
               </FormControl>
             )}
             {error && (
