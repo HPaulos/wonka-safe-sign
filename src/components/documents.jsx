@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Input,
   List,
@@ -13,11 +13,15 @@ import {
   Button,
   Tooltip,
 } from "@chakra-ui/react";
-import { MdSearch, MdClose } from "react-icons/md";
+import { MdSearch, MdClose, MdAdd } from "react-icons/md";
 import { useDebouncedCallback } from "use-debounce";
-import { MdDescription, MdPictureAsPdf, MdAttachFile } from "react-icons/md";
 import { Flex } from "@chakra-ui/react";
-import { FaFileAlt } from "react-icons/fa";
+import {
+  colors,
+  buttonStyle,
+  iconStyles,
+  documentButtonStyle,
+} from "../styles";
 
 const documents = [
   { name: "Book 1", type: "pdf", size: 2.5, date: "2021-01-01" },
@@ -28,19 +32,11 @@ const documents = [
   // Add more documents here
 ];
 
-const icons = {
-  docx: { icon: MdDescription, color: "blue.500" },
-  pdf: { icon: MdPictureAsPdf, color: "red.500" },
-  txt: { icon: FaFileAlt, color: "gray.500" },
-  default: {
-    icon: MdAttachFile,
-    color: "gray.400",
-  },
-};
-
 function Documents() {
   const [search, setSearch] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   const debounced = useDebouncedCallback(
     // function
@@ -61,56 +57,98 @@ function Documents() {
     setSearch("");
   };
 
+  // Function to trigger file input
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+
   const filteredDocuments = documents.filter((document) =>
     document.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      // Process the file as needed, e.g., upload or add to the documents array
+    }
+  };
+
   return (
     <Box h="full" overflowY="auto" mt={2}>
       <Container maxW="container.md">
-        <InputGroup mb={6}>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<Icon as={MdSearch} color="teal.500" />}
+        <Box position="sticky" top={0} zIndex={1}>
+          <InputGroup mb={6}>
+            <InputLeftElement
+              pointerEvents="none"
+              children={<Icon as={MdSearch} color={colors.primary} />}
+            />
+            <Input
+              placeholder="Type here to search..."
+              value={inputValue}
+              onChange={handleInputChange}
+              borderColor={colors.primary}
+              bg={colors.background}
+            />
+            <InputRightElement>
+              <Button {...buttonStyle} onClick={clearSearch}>
+                <Icon as={MdClose} />
+              </Button>
+            </InputRightElement>
+          </InputGroup>
+          {/* Hidden file input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            style={{ display: "none" }}
           />
-          <Input
-            placeholder="Type here to search..."
-            value={inputValue}
-            onChange={handleInputChange}
-            borderColor="teal.500"
-            bg="white"
-          />
-          <InputRightElement>
-            <Button variant="ghost" onClick={clearSearch}>
-              <Icon as={MdClose} color="teal.500" />
-            </Button>
-          </InputRightElement>
-        </InputGroup>
-        <List>
-          {filteredDocuments.map((doc) => (
-            <ListItem key={doc.name}>
-              <Tooltip
-                label={doc.date}
-                aria-label="A tooltip"
-                placement="auto-end"
-                openDelay={1000}
-                
-              >
-                <Button variant="ghost">
-                  <Flex align="center">
-                    <Icon
-                      as={icons[doc.type]?.icon || icons["default"].icon}
-                      color={icons[doc.type]?.color || icons["default"].color}
-                    />{" "}
-                    <Text ml={2} noOfLines={1}>
-                      {doc.name}
-                    </Text>
-                  </Flex>
-                </Button>
-              </Tooltip>
-            </ListItem>
-          ))}
-        </List>{" "}
+
+          {/* Button to add new file */}
+          <Button
+            onClick={triggerFileInput}
+            {...buttonStyle}
+            width={"100%"}
+            mb={4}
+          >
+            <Flex align="center">
+              <Icon as={MdAdd} />
+              <Text ml={2}>Add New File</Text>
+            </Flex>
+          </Button>
+        </Box>
+        <Box overflowY="auto" maxHeight="400px" mb={4}>
+          <List>
+            {filteredDocuments.map((doc) => (
+              <ListItem key={doc.name}>
+                <Tooltip
+                  label={doc.date}
+                  aria-label="A tooltip"
+                  placement="auto-end"
+                  openDelay={1000}
+                >
+                  <Button {...documentButtonStyle}>
+                    <Flex align="center">
+                      <Icon
+                        as={
+                          iconStyles[doc.type]?.icon ||
+                          iconStyles["default"].icon
+                        }
+                        color={
+                          iconStyles[doc.type]?.color ||
+                          iconStyles["default"].color
+                        }
+                      />
+                      <Text ml={2} noOfLines={1}>
+                        {doc.name}
+                      </Text>
+                    </Flex>
+                  </Button>
+                </Tooltip>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
       </Container>
     </Box>
   );

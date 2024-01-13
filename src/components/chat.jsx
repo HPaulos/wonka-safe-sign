@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -8,17 +8,17 @@ import {
   InputGroup,
   Textarea,
   InputRightElement,
-  Badge,
+  Icon,
 } from "@chakra-ui/react";
 import { MdSend } from "react-icons/md";
-import { Icon } from "@chakra-ui/react";
+import wonkaStyles from "../styles.js";
 
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const messagesEndRef = React.useRef(null);
+  const messagesEndRef = useRef(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -29,14 +29,28 @@ function Chat() {
     setMessages([...messages, newUserMessage]);
     setInput("");
 
-    // Simulate a response from the system
+    // Simulate a response
     setTimeout(() => {
       const systemResponse = {
-        text: "This is a response from the system.",
+        text: "Response from the system.",
         sender: "system",
       };
-      setMessages([...messages, newUserMessage, systemResponse]);
+      setMessages((m) => [...m, systemResponse]);
     }, 1000);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const calculateRows = (text) => {
+    const lines = text.split("\n");
+    const numLines = lines.length;
+    const numRows = Math.min(6, Math.max(1, numLines));
+    return numRows;
   };
 
   return (
@@ -46,100 +60,56 @@ function Chat() {
       m={4}
       borderRadius="10px"
       boxShadow="lg"
-      overflow="hidden"
       h="100%"
     >
-      <Flex
-        flex="1"
-        direction="column"
-        justifyContent="space-between"
-        p={4}
-        overflowY="auto"
-      >
-        {" "}
-        <Box overflowY="auto" flex="1">
-          <VStack spacing={4} align="stretch">
-            {messages.map((message, index) => (
-              <Flex key={index}>
-                <Box
-                  p={3}
-                  borderRadius="8px"
-                  bg={message.sender === "user" ? "teal.500" : "white"}
-                >
-                  <Text
-                    fontSize="xl"
-                    color={message.sender === "user" ? "white" : "gray.800"}
-                  >
-                    {message.text}
-                  </Text>
-                </Box>
-              </Flex>
-            ))}
-            <div ref={messagesEndRef} />
-          </VStack>
-        </Box>
-        <Box mb={4} textAlign="center">
-          <Flex justifyContent="center">
-            <Badge
-              flex="1"
-              mr={2}
-              whiteSpace="nowrap"
-              fontSize="lg"
-              color="teal.500" // Match font color with input field
-              bg="gray.100" // Match background color with input field
-              borderRadius="1rem"
-              px={4}
-              py={2}
-              textTransform="none" // Prevent uppercase transformation
-              _hover={{
-                bg: "teal.200", // Adjust hover background color if needed
-              }}
-              onClick={() => setInput("Summarize the document for me")}
+      {/* Scrollable message area */}
+      <Box flex="1" p={4} overflowY="auto">
+        <VStack spacing={4} align="stretch">
+          {messages.map((message, index) => (
+            <Box
+              key={index}
+              p={3}
+              borderRadius="8px"
+              bg={
+                message.sender === "user" ? wonkaStyles.colors.primary : "white"
+              }
+              alignSelf="flex-start" // Align all messages to the left
             >
-              Summarize the document for me
-            </Badge>
+              <Text
+                fontSize="xl"
+                color={message.sender === "user" ? "white" : "black"}
+              >
+                {message.text}
+              </Text>
+            </Box>
+          ))}
+          <div ref={messagesEndRef} />
+        </VStack>
+      </Box>
 
-            <Badge
-              flex="1"
-              whiteSpace="nowrap"
-              fontSize="lg"
-              color="teal.500" // Match font color with input field
-              bg="gray.100" // Match background color with input field
-              borderRadius="1rem"
-              px={4}
-              py={2}
-              textTransform="none" // Prevent uppercase transformation
-              _hover={{
-                bg: "teal.200", // Adjust hover background color if needed
-              }}
-              onClick={() => setInput("Summarize date-sensitive things")}
-            >
-              Summarize date-sensitive things
-            </Badge>
-          </Flex>
-        </Box>
-        <Flex mt={4} mb={4} w="75%" mx="auto">
-          <Box flex="1" mr={4}>
-            <InputGroup mb={3}>
-              <Textarea
-                placeholder="Type your question here.."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                borderColor="teal.500"
-                resize="none"
-                size="lg"
-                bg="gray.100"
-                h="auto"
-              />
-              <InputRightElement>
-                <Button variant="ghost" onClick={handleSend}>
-                  <Icon as={MdSend} color="teal.500" fontSize="2rem" />
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-          </Box>
-        </Flex>
-      </Flex>
+      {/* Fixed input area with added bottom margin */}
+      <InputGroup size="lg" mb={7}>
+        <Textarea
+          placeholder="Type your question here..."
+          onKeyDown={handleKeyDown}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          borderColor={wonkaStyles.colors.primary}
+          bg={wonkaStyles.colors.background}
+          resize="vertical"
+          rows={calculateRows(input)}
+        />
+        <InputRightElement width="4.5rem">
+          <Button
+            h="1.75rem"
+            size="sm"
+            onClick={handleSend}
+            {...wonkaStyles.buttonStyle}
+          >
+            <Icon as={MdSend} />
+          </Button>
+        </InputRightElement>
+      </InputGroup>
     </Flex>
   );
 }

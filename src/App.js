@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Home from "./pages/home";
 import WonkaLogin from "./pages/wonka-login";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import firebaseWonkaApp from "./util/firebase-wonka-app";
+import PaymentPage from "./pages/paymentPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -23,7 +24,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
+        {/* <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} /> */}
+        <Route path="/" element={<Home />} /> 
+        <Route path="/payment" element={<PaymentPage />} />
         <Route path="/login" element={<WonkaLogin />} />
       </Routes>
     </Router>
