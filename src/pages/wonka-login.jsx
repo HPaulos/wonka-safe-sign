@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -15,120 +15,96 @@ import {
   InputRightElement,
   IconButton,
   FormErrorMessage,
-} from "@chakra-ui/react";
-import { FaPencilAlt, FaEye, FaEyeSlash } from "react-icons/fa";
-import firebaseWonkaApp from "../util/firebase-wonka-app";
+} from '@chakra-ui/react';
+import { FaPencilAlt, FaEye, FaEyeSlash } from 'react-icons/fa';
+import firebaseWonkaApp from '../util/firebase-wonka-app';
 import {
   getAuth,
   fetchSignInMethodsForEmail,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-} from "firebase/auth";
+} from 'firebase/auth';
 
 function WonkaLogin() {
-  const checkIfUserIsRegistered = async (email) => {
-    const auth = getAuth(firebaseWonkaApp);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPasswordField, setShowConfirmPasswordField] = useState(false);
+  const [emailEntered, setEmailEntered] = useState(false);
+
+  const auth = getAuth(firebaseWonkaApp);
+
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      if (email && isEmailValid(email)) {
+        if (await isUserRegisted(email)) {
+          setShowConfirmPasswordField(false);
+        } else {
+          console.log("User is new");
+          setShowConfirmPasswordField(true);  
+        }
+      } else {
+        setShowConfirmPasswordField(false);
+      }
+    };
+  
+    if (emailEntered) {
+      checkUserStatus();
+    }
+  }, [email, emailEntered, auth]);
+
+  const isUserRegisted = async (email) => {
     const signInMethods = await fetchSignInMethodsForEmail(auth, email);
     return signInMethods.length > 0;
   };
 
-  const [newAccount, setNewAccount] = useState(false);
-  const [oldAccount, setOldAccount] = useState(false);
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [passwordsMatch, setPasswordsMatch] = useState(false); // TODO: Implement password matching [https://stackoverflow.com/questions/21727317/how-to-check-confirm-password-field-in-form-without-reloading-page
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [disabled, setDisabled] = useState(true); // TODO: Implement disabled button [https://stackoverflow.com/questions/21727317/how-to-check-confirm-password-field-in-form-without-reloading-page
-
   const toggleShowPassword = () => setShowPassword(!showPassword);
-  const toggleShowConfirmPassword = () =>
-    setShowConfirmPassword(!showConfirmPassword);
+  const toggleShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
-  const handlePasswordMatch = (event) => {
-    const passwordsMatch = password && event.target.value === password;
-    setPasswordsMatch(passwordsMatch);
-    setDisabled(!(isEmailValid(email) && password && passwordsMatch));
-  };
+  const handleEmailChange = (event) => setEmail(event.target.value);
+  const handlePasswordChange = (event) => setPassword(event.target.value);
+  const handleConfirmPasswordChange = (event) => setConfirmPassword(event.target.value);
 
-  const isEmailValid = (email) => {
-    // eslint-disable-next-line no-useless-escape
-    const emailRegex =
-      /^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*(\.[a-zA-Z]{2,4})+$/;
-    return emailRegex.test(email);
-  };
+  const isEmailValid = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const passwordsMatch = () => password === confirmPassword;
 
-  useEffect(() => {
-    const checkRegistration = async () => {
-      if (email && isEmailValid(email)) {
-        const isRegistered = await checkIfUserIsRegistered(email);
-        if (isRegistered) {
-          setOldAccount(true);
-          setNewAccount(false);
-        } else {
-          setNewAccount(true);
-          setOldAccount(false);
-        }
-      }
-    };
-    checkRegistration();
-  }, [email]);
-
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-    setDisabled(
-      !(isEmailValid(event.target.value) && password && passwordsMatch)
-    );
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-    setDisabled(!(isEmailValid(email) && event.target.value && passwordsMatch));
+  const handleContinue = () => {
+    if (isEmailValid(email)) {
+      setEmailEntered(true);
+    } else {
+      setError('Invalid email address');
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if(disabled){
-      setError("Please enter a valid email and password");
+    setError('');
+
+    if (showConfirmPasswordField && !passwordsMatch()) {
+      setError('Passwords do not match');
       return;
     }
-    setError(""); // Reset the error message before a new attempt
-    const auth = getAuth(firebaseWonkaApp);
-    if (newAccount) {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-        // Registered successfully
-        console.log(userCredential);
-      } catch (error) {
-        setError(error.message);
+
+    try {
+      if (showConfirmPasswordField) {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
       }
-    } else {
-      try {
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-        // Logged in successfully
-        console.log(userCredential);
-      } catch (error) {
-        setError(error.message);
-      }
+    } catch (error) {
+      setError(error.message);
     }
   };
 
   return (
-    <Center h="100vh">
+    <Center h='100vh'>
       <Box p={4}>
         <form onSubmit={handleSubmit}>
-          <VStack spacing={4} maxWidth="350px" mx="auto">
-            <Flex fontSize="4xl" mb={4} alignItems="center" color="teal.500">
+          <VStack spacing={4} maxWidth='350px' mx='auto'>
+            <Flex fontSize='4xl' mb={4} alignItems='center' color='teal.500'>
               <Text>Wonka</Text>
               <Spacer mx={2} />
               <FaPencilAlt />
@@ -136,75 +112,88 @@ function WonkaLogin() {
               <Text>Buster</Text>
             </Flex>
             <Spacer my={1} />
-            <FormControl id="email">
+            <FormControl id='email' isRequired isInvalid={!isEmailValid(email) && emailEntered}>
               <Input
-                type="email"
-                placeholder="Email Address"
+                type='email'
+                placeholder='Email Address'
                 onChange={handleEmailChange}
+                value={email}
+                isDisabled={emailEntered}
               />
+              {!isEmailValid(email) && emailEntered && <FormErrorMessage>Invalid email address</FormErrorMessage>}
             </FormControl>
-            {(newAccount || oldAccount) && (
-              <FormControl id="password">
-                <InputGroup>
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    onChange={handlePasswordChange}
-                  />
-                  <InputRightElement>
-                    <IconButton
-                      bg="transparent !important"
-                      variant="ghost"
-                      aria-label={
-                        showPassword ? "Mask password" : "Show password"
-                      }
-                      icon={showPassword ? <FaEyeSlash /> : <FaEye />}
-                      onClick={toggleShowPassword}
+            {emailEntered && (
+              <>
+                <FormControl id='password' isRequired>
+                  <InputGroup>
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder='Password'
+                      onChange={handlePasswordChange}
+                      value={password}
                     />
-                  </InputRightElement>
-                </InputGroup>
-              </FormControl>
-            )}
-            {newAccount && (
-              <FormControl id="confirmPassword" isInvalid={!passwordsMatch}>
-                <InputGroup>
-                  <Input
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm Password"
-                    onChange={handlePasswordMatch}
-                  />
-                  <InputRightElement>
-                    <IconButton
-                      bg="transparent !important"
-                      variant="ghost"
-                      aria-label={
-                        showConfirmPassword ? "Mask password" : "Show password"
-                      }
-                      icon={showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                      onClick={toggleShowConfirmPassword}
-                    />
-                  </InputRightElement>
-                </InputGroup>
-                {!passwordsMatch && (
-                  <FormErrorMessage>Passwords do not match</FormErrorMessage>
+                    <InputRightElement>
+                      <IconButton
+                        bg='transparent !important'
+                        variant='ghost'
+                        aria-label={showPassword ? 'Mask password' : 'Show password'}
+                        icon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                        onClick={toggleShowPassword}
+                      />
+                    </InputRightElement>
+                  </InputGroup>
+                </FormControl>
+                {showConfirmPasswordField && (
+                  <FormControl id='confirmPassword' isInvalid={!passwordsMatch()} isRequired>
+                    <InputGroup>
+                      <Input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder='Confirm Password'
+                        onChange={handleConfirmPasswordChange}
+                        value={confirmPassword}
+                      />
+                      <InputRightElement>
+                        <IconButton
+                          bg='transparent !important'
+                          variant='ghost'
+                          aria-label={showConfirmPassword ? 'Mask password' : 'Show password'}
+                          icon={showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                          onClick={toggleShowConfirmPassword}
+                        />
+                      </InputRightElement>
+                    </InputGroup>
+                    {!passwordsMatch() && <FormErrorMessage>Passwords do not match</FormErrorMessage>}
+                  </FormControl>
                 )}
-              </FormControl>
+              </>
             )}
             {error && (
-              <Alert status="error" mt={4}>
+              <Alert status='error' mt={4}>
                 <AlertIcon />
                 {error}
               </Alert>
             )}
-            <Button
-              disabled={disabled}
-              colorScheme="teal"
-              type="submit"
-              width="full"
-              mt={4}
-            >
-              {newAccount ? "Register" : "Login"}
-            </Button>
+            {!emailEntered ? (
+              <Button
+                colorScheme='teal'
+                onClick={handleContinue}
+                width='full'
+                mt={4}
+                isDisabled={!email}
+              >
+                Continue
+              </Button>
+            ) : (
+              <Button
+                colorScheme='teal'
+                type='submit'
+                width='full'
+                mt={4}
+                isDisabled={!password || (showConfirmPasswordField && !passwordsMatch())}
+              >
+                {showConfirmPasswordField ? 'Register' : 'Login'}
+              </Button>
+            )}
           </VStack>
         </form>
       </Box>
